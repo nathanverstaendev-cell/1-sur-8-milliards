@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Découvre à quel point tu es unique parmi les 8 milliards d’humains : pourcentages réels, comparaison avec un ami, image à partager.">
+<title>1 sur 8 milliards</title>
+<style>
+:root{--bg:#eef1f8;--tx:#11163a;--mu:#5a6288;--co:#2b3aff;--pk:#ff3d6e;--ln:#cfd5ea;--in:#fff;color-scheme:light}
+@media(prefers-color-scheme:dark){:root{--bg:#0b0f26;--tx:#e8ebfa;--mu:#98a0c8;--co:#8a95ff;--pk:#ff5c85;--ln:#252b52;--in:#141a3b;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,-apple-system,sans-serif;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+.wrap{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;max-width:1100px;margin:auto;padding:0 12px}
+main{padding:20px 6px 40px;max-width:540px;width:100%;margin:auto}
+.ad{display:none}.slot{width:160px;min-height:600px;border:1px dashed var(--ln);color:var(--mu);font-size:12px;display:flex;align-items:center;justify-content:center;text-align:center;border-radius:6px}
+@media(min-width:1000px){.wrap{grid-template-columns:170px minmax(0,540px) 170px;justify-content:center}.ad{display:block;padding-top:20px}.ad .slot{position:sticky;top:20px}}
+h1{font:700 30px/1.15 Georgia,"Iowan Old Style",serif;margin:6px 0 8px}
+.mu{color:var(--mu)}.c{text-align:center}
+.dots{display:grid;grid-template-columns:repeat(20,1fr);gap:5px;margin:18px auto;max-width:300px}
+.dots i{aspect-ratio:1;border-radius:50%;background:var(--co);opacity:.28}
+.dots i.me{background:var(--pk);opacity:1;box-shadow:0 0 0 4px color-mix(in srgb,var(--pk) 30%,transparent)}
+.live{font:700 26px Georgia,serif;text-align:center;font-variant-numeric:tabular-nums}
+section{border-top:1px solid var(--ln);padding:16px 0}
+label{display:block;font-size:13px;color:var(--mu);margin:12px 0 4px}
+select,input{width:100%;padding:11px;border-radius:8px;border:1px solid var(--ln);background:var(--in);color:var(--tx);font-size:16px}
+select:focus,input:focus,button:focus-visible{outline:2px solid var(--co);outline-offset:2px}
+button{width:100%;padding:14px;border:0;border-radius:8px;background:var(--co);color:#fff;font:700 16px system-ui;margin-top:12px}
+@media(prefers-color-scheme:dark){button{color:#0b0f26}}
+button.s{background:transparent;color:var(--tx);border:1px solid var(--ln)}
+.big{font:700 clamp(36px,11vw,54px)/1.05 Georgia,serif;text-align:center;color:var(--co);margin:6px 0}
+.row{padding:10px 0;border-top:1px solid var(--ln);font-size:14px}
+.bar{height:5px;background:var(--ln);margin-top:6px;border-radius:3px;overflow:hidden}.bar i{display:block;height:100%;background:var(--pk)}
+summary{cursor:pointer;font-weight:600}
+.fact{border-left:3px solid var(--pk);padding:4px 12px;margin:14px 0}
+#msg{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:8px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;max-width:90%;text-align:center}#msg.on{opacity:1}
+</style></head><body>
+<div class="wrap">
+<aside class="ad"><!-- Colle ici ton code publicitaire (côté gauche) --><div class="slot">Espace pub<br>160×600</div></aside>
+<main>
+<div id="home">
+<h1>1 sur <span id="pop">8,3</span> milliards</h1>
+<p class="mu">Combien d’humains te ressemblent vraiment ? Réponds à ce que tu veux : chaque réponse est comparée aux statistiques mondiales.</p>
+<div class="dots" id="dots" aria-hidden="true"></div>
+<div class="c mu" style="font-size:13px">Population mondiale estimée en direct</div>
+<div class="live" id="live"></div>
+<div class="fact" id="fact"></div>
+<section id="fa"></section>
+<button class="s" id="fr">Comparer avec un ami</button>
+<section id="fb" hidden></section>
+<button id="go">Calculer mon unicité</button>
+<section id="hist"></section>
+<section><details><summary>Sources et méthode</summary>
+<p class="mu" style="font-size:14px">Valeurs arrondies, inspirées de l’ONU (population, âges, urbanisation), l’UIT (Internet), la GSMA (smartphones), Ethnologue (langues) et NCD-RisC (tailles). Le nombre de langues parlées, le régime alimentaire et le daltonisme sont des ordres de grandeur. Chaque trait est traité comme indépendant des autres : c’est une simplification, car pays, langue ou couleur de cheveux sont liés. Le résultat est donc une estimation, pas une mesure exacte.</p></details></section>
+</div>
+<div id="res" hidden><div id="out"></div></div>
+</main>
+<aside class="ad"><!-- Colle ici ton code publicitaire (côté droit) --><div class="slot">Espace pub<br>160×600</div></aside>
+</div>
+<div id="msg" role="status"></div>
+<script>
+const $=id=>document.getElementById(id),F='fr-FR';
+let mt;const say=(t,ms=4000)=>{const m=$('msg');m.textContent=t;m.classList.add('on');clearTimeout(mt);mt=setTimeout(()=>m.classList.remove('on'),ms)};
+const BASE=8231e6,T0=Date.UTC(2025,6,1),RATE=2.2,pop=()=>BASE+(Date.now()-T0)/1e3*RATE;
+const G=[8,8.3,8.3,8.3,8.2,8.1,7.9,7.4,6.6,6.3,5.8,5.2,4.4,3.7,2.8,1.9,1.1,.6,.2],GS=G.reduce((x,y)=>x+y,0);
+const S=[
+['sexe','Sexe',[['Femme',49.7],['Homme',50.3]]],
+['pays','Pays de résidence',[['Inde',17.8],['Chine',17.3],['États-Unis',4.2],['Indonésie',3.4],['Pakistan',3],['Nigeria',2.8],['Brésil',2.6],['Bangladesh',2.1],['Russie',1.8],['Éthiopie',1.6],['Mexique',1.6],['Japon',1.5],['Égypte',1.4],['Philippines',1.4],['RD Congo',1.3],['Vietnam',1.2],['Iran',1.1],['Turquie',1.1],['Allemagne',1],['Thaïlande',.9],['Royaume-Uni',.8],['France',.8],['Italie',.7],['Espagne',.6],['Algérie',.55],['Canada',.5],['Maroc',.45],['Belgique',.14],['Suisse',.11],['Autre pays (moyenne)',.4]]],
+['main','Main dominante',[['Droitier(ère)',89],['Gaucher(ère)',10],['Ambidextre',1]]],
+['abo','Groupe sanguin',[['O',44],['A',28],['B',22],['AB',6]]],
+['rh','Rhésus',[['Positif (+)',94],['Négatif (−)',6]]],
+['yeux','Couleur des yeux',[['Marron',75],['Bleu',9],['Noisette',8],['Ambre',5],['Vert',2],['Gris',1]]],
+['cheveux','Cheveux naturels',[['Noirs',75],['Bruns / châtains',18],['Blonds',4],['Roux',1.5],['Blancs / gris',1.5]]],
+['dalto','Vision des couleurs',[['Normale',0],['Daltonisme',0]]],
+['langue','Langue maternelle',[['Mandarin',11.5],['Espagnol',5.9],['Anglais',4.8],['Arabe',4.6],['Hindi',4.2],['Bengali',2.9],['Portugais',2.9],['Russe',1.8],['Japonais',1.5],['Allemand',.9],['Français',.9],['Néerlandais',.3],['Autre langue (moyenne)',.5]]],
+['nl','Nombre de langues parlées',[['Une seule',40],['Deux',43],['Trois ou plus',17]]],
+['regime','Régime alimentaire',[['Omnivore',89],['Végétarien',9],['Végétalien',1],['Pescétarien',1]]],
+['ville','Lieu de vie',[['Ville',58],['Campagne',42]]],
+['web','Tu utilises Internet',[['Oui',68],['Non',32]]],
+['tel','Tu as un smartphone',[['Oui',70],['Non',30]]],
+['jumeau','Tu es jumeau / jumelle',[['Non',97.6],['Oui',2.4]]]
+];
+const FACTS=['Chaque seconde, environ 4 bébés naissent sur Terre.','Près d’1 humain sur 5 vit en Inde.','Plus de la moitié des humains vivent en ville (environ 58 %).','Seuls 10 % des humains environ sont gauchers.','Moins de 2 % des humains ont les yeux verts.','L’âge médian mondial est d’environ 31 ans.','Près de 7 humains sur 10 utilisent Internet.','L’Inde et la Chine rassemblent plus d’1 humain sur 3.','On compte environ 7 000 langues parlées dans le monde.','La Terre gagne environ 70 millions d’habitants par an.','Environ 6 % des humains ont un rhésus négatif.','Plus d’1 humain sur 4 a moins de 15 ans.','Le mandarin est la langue maternelle de plus d’1 humain sur 9.','Seul 1 humain sur 1 461 est né un 29 février.'];
+const R=[['un bus plein',50],['un petit village',800],['un stade de foot plein',5e4],['la population de Namur',1.12e5],['la population de Bruxelles',1.2e6],['la population de Paris',2.1e6],['la population de la Belgique',11.8e6],['la population de la France',68e6],['la population des États-Unis',335e6],['la population de l’Europe',745e6]];
+const f=n=>n>=1e9?(n/1e9).toLocaleString(F,{maximumFractionDigits:1})+' milliards':n>=1e6?(n/1e6).toLocaleString(F,{maximumFractionDigits:1})+' millions':Math.round(n).toLocaleString(F);
+const pc=p=>(p*100).toLocaleString(F,{maximumSignificantDigits:2})+' %';
+const Phi=z=>{const t=1/(1+.2316419*Math.abs(z)),d=.3989423*Math.exp(-z*z/2),p=d*t*(.3193815+t*(-.3565638+t*(1.781478+t*(-1.821256+t*1.330274))));return z>0?1-p:p};
+const form=(p,t)=>`<b>${t}</b>`+S.map(([id,l,o])=>`<label for="${p}${id}">${l}</label><select id="${p}${id}"><option value="">Passer</option>${o.map((x,i)=>`<option value="${i}">${x[0]}</option>`).join('')}</select>`).join('')+`<label for="${p}dob">Date de naissance</label><input type="date" id="${p}dob" max="${new Date().toISOString().slice(0,10)}"><label for="${p}h">Taille (cm)</label><input type="number" id="${p}h" min="50" max="250" inputmode="numeric">`;
+$('dots').innerHTML=Array.from({length:400},(_,i)=>`<i${i==237?' class="me"':''}></i>`).join('');
+$('fa').innerHTML=form('a','Ton profil');$('fb').innerHTML=form('b','Profil de ton ami(e)');
+$('fact').innerHTML='<b>Le saviez-vous ?</b><br>'+FACTS[Math.floor(Date.now()/864e5)%FACTS.length];
+const tick=()=>{const P=pop();$('live').textContent=Math.floor(P).toLocaleString(F);$('pop').textContent=(P/1e9).toLocaleString(F,{minimumFractionDigits:1,maximumFractionDigits:1})};tick();setInterval(tick,200);
+const read=p=>{const v={};S.forEach(([id])=>v[id]=$(p+id).value);v.dob=$(p+'dob').value;v.h=$(p+'h').value;return v};
+try{const s=JSON.parse(localStorage.getItem('v1s8m')||'null');if(s)Object.keys(s).forEach(k=>{if($('a'+k))$('a'+k).value=s[k]})}catch(e){}
+const H=()=>{try{return JSON.parse(localStorage.getItem('h1s8m')||'[]')}catch(e){return[]}};
+function hist(){const h=H();$('hist').innerHTML=h.length?'<b>Mes résultats précédents</b>'+h.map(x=>`<div class="row">${x.d} : <b>1 sur ${x.x}</b></div>`).join('')+'<button class="s" id="hc">Effacer l’historique</button>':'';if(h.length)$('hc').onclick=()=>{try{localStorage.removeItem('h1s8m')}catch(e){}hist()}}
+hist();
+$('fr').onclick=()=>{const b=$('fb');b.hidden=!b.hidden;$('fr').textContent=b.hidden?'Comparer avec un ami':'Annuler la comparaison'};
+
+function calc(v){const r=[];
+S.forEach(([id,l,o])=>{if(v[id]===''&&!0)return;if(v[id]==='')return;const x=o[v[id]];let p=x[1];
+if(id==='dalto'){const q=v.sexe==='0'?.4:v.sexe==='1'?4.5:2.5;p=v.dalto==='0'?100-q:q}
+r.push({l,d:x[0],p:p/100})});
+if(v.dob){const d=new Date(v.dob+'T12:00:00'),n=new Date();let a=n.getFullYear()-d.getFullYear();
+if(n<new Date(n.getFullYear(),d.getMonth(),d.getDate()))a--;
+if(a>=0&&a<120){const g=Math.min(18,a/5|0),cum=(G.slice(0,g).reduce((x,y)=>x+y,0)+G[g]*((a%5)/5))/GS;
+r.push({l:'Âge',d:a+' ans',p:G[g]/GS/5,pt:`plus âgé(e) que ${Math.round(cum*100)} % des humains`});
+r.push({l:'Jour d’anniversaire',d:d.toLocaleDateString(F,{day:'numeric',month:'long'}),p:d.getMonth()==1&&d.getDate()==29?1/1461:4/1461})}}
+if(v.h){const h=+v.h,b=(m,s)=>Phi((h+.5-m)/s)-Phi((h-.5-m)/s),k=v.sexe,
+p=k==='0'?b(159,7):k==='1'?b(171,7.5):(b(159,7)+b(171,7.5))/2,
+q=k==='0'?Phi((h-159)/7):k==='1'?Phi((h-171)/7.5):(Phi((h-159)/7)+Phi((h-171)/7.5))/2;
+r.push({l:'Taille',d:h+' cm',p:Math.max(p,1e-6),pt:`plus grand(e) que ${Math.round(q*100)} % des ${k==='0'?'femmes':k==='1'?'hommes':'humains'}`})}
+return r}
+
+function rowsOf(r,P){r.sort((a,b)=>b.p-a.p);let c=1,h='';
+r.forEach(t=>{c*=t.p;const n=P*c,w=Math.max(2,Math.log10(Math.max(n,1))/Math.log10(P)*100);
+h+=`<div class="row"><b>${t.l}</b> : ${t.d}<br><span class="mu">${pc(t.p)} des humains. Il reste environ ${n<1?'moins d’1 personne':f(n)+' de personnes'}.${t.pt?'<br>Tu es '+t.pt+'.':''}</span><div class="bar"><i style="width:${w}%"></i></div></div>`});
+return{c,h}}
+
+function card(X){const c=document.createElement('canvas');c.width=1080;c.height=1350;const x=c.getContext('2d');
+x.fillStyle='#0b0f26';x.fillRect(0,0,1080,1350);
+for(let i=0;i<400;i++){x.beginPath();x.arc(140+(i%20)*40,120+((i/20)|0)*40,i==237?15:10,0,7);x.fillStyle=i==237?'#ff5c85':'rgba(138,149,255,.3)';x.fill()}
+x.textAlign='center';x.fillStyle='#98a0c8';x.font='48px Georgia,serif';x.fillText('Je suis',540,1010);
+const t='1 sur '+X;let s=104;x.font='bold '+s+'px Georgia,serif';while(x.measureText(t).width>940){s-=4;x.font='bold '+s+'px Georgia,serif'}
+x.fillStyle='#8a95ff';x.fillText(t,540,1120);
+x.fillStyle='#e8ebfa';x.font='42px Georgia,serif';x.fillText('sur Terre',540,1185);
+x.fillStyle='#98a0c8';x.font='34px system-ui,sans-serif';x.fillText('1 sur 8 milliards',540,1290);return c}
+
+function shareText(t){return async()=>{const C=window.Capacitor,sp=C&&C.Plugins&&C.Plugins.Share;
+try{if(sp){await sp.share({text:t,dialogTitle:'Partager'});return}
+if(navigator.share){await navigator.share({text:t});return}}catch(e){if(e&&e.name==='AbortError')return}
+try{await navigator.clipboard.writeText(t);say('Résultat copié, colle-le où tu veux.')}
+catch(e){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();let ok=false;try{ok=document.execCommand('copy')}catch(_){}a.remove();say(ok?'Résultat copié, colle-le où tu veux.':t,8000)}}}
+
+function shareImg(cv,t){return()=>cv.toBlob(async b=>{const file=new File([b],'1-sur-8-milliards.png',{type:'image/png'});
+try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],text:t});return}}catch(e){if(e&&e.name==='AbortError')return}
+const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='1-sur-8-milliards.png';a.click();say('Image enregistrée. Sinon, appuie longuement sur l’image pour la garder.',6000)})}
+
+const view=h=>{$('out').innerHTML=h;$('home').hidden=true;$('res').hidden=false;scrollTo(0,0);$('bk').onclick=()=>{$('res').hidden=true;$('home').hidden=false;scrollTo(0,0)}};
+const BTN='<button class="s" id="bk">Modifier mon profil</button>';
+
+function show(v){const r=calc(v);if(!r.length){say('Réponds à au moins une question.');return}
+try{localStorage.setItem('v1s8m',JSON.stringify(v))}catch(e){}
+const P=pop(),{c,h}=rowsOf(r,P),X=1/c,N=P*c,rare=r[r.length-1],Xs=f(X);
+try{const l=H();l.unshift({d:new Date().toLocaleDateString(F),x:Xs});localStorage.setItem('h1s8m',JSON.stringify(l.slice(0,20)));hist()}catch(e){}
+const cmp=N>=20?' Comparable à '+R.reduce((a,b)=>Math.abs(Math.log(b[1]/N))<Math.abs(Math.log(a[1]/N))?b:a)[0]+'.':'';
+const cv=card(Xs),t=`Je suis 1 sur ${Xs} sur Terre ! Et toi, à quel point es-tu unique ?`;
+view(`<div class="c mu" style="margin-top:12px">Tu es</div><div class="big">1 sur ${Xs}</div>
+<p class="c">Tu représentes ${pc(c)} de l’humanité.<br>${N<1?'<b>Statistiquement, tu es unique : moins d’une personne sur Terre te ressemble.</b>':'Environ <b>'+f(N)+'</b> de personnes te ressemblent.'+cmp}</p>
+<img id="cimg" alt="Carte à partager" src="${cv.toDataURL()}" style="width:100%;max-width:340px;display:block;margin:12px auto;border-radius:8px">
+<button id="si">Partager l’image</button><button class="s" id="sh">Partager le texte</button>
+<section><b>Ton trait le plus rare</b><br>${rare.l} : ${rare.d}, partagé par ${pc(rare.p)} des humains.</section>
+<section><b>L’entonnoir</b><div class="mu" style="font-size:13px">Chaque réponse réduit le nombre de personnes qui te ressemblent.</div>${h}</section>${BTN}`);
+$('si').onclick=shareImg(cv,t);$('sh').onclick=shareText(t)}
+
+function duo(va,vb){const ra=calc(va),rb=calc(vb),P=pop(),A=rowsOf(ra.slice(),P),B=rowsOf(rb.slice(),P),Xa=f(1/A.c),Xb=f(1/B.c);
+const com=ra.filter(x=>rb.some(y=>y.l===x.l&&y.d===x.d));let q=1;com.forEach(x=>q*=x.p*x.p);
+const Y=f(1/q),t=`Mon ami(e) et moi : ${com.length} traits en commun, un duo 1 sur ${Y} ! Et vous ?`;
+view(`<div class="c mu" style="margin-top:12px">Toi</div><div class="big">1 sur ${Xa}</div>
+<div class="c mu">Ton ami(e)</div><div class="big">1 sur ${Xb}</div>
+<section><b>Vos traits en commun (${com.length})</b>${com.length?com.map(x=>`<div class="row">${x.l} : ${x.d}<br><span class="mu">${pc(x.p)} des humains</span></div>`).join('')+`<p class="c">Probabilité que deux inconnus partagent tout cela : <b>1 duo sur ${Y}</b>.</p>`:'<p class="mu">Rien en commun sur ces réponses : vous êtes complémentaires.</p>'}</section>
+<button id="sh">Partager le duo</button>${BTN}`);$('sh').onclick=shareText(t)}
+
+$('go').onclick=()=>{const a=read('a');if(!$('fb').hidden){const b=read('b');if(calc(b).length&&calc(a).length){duo(a,b);return}say('Remplis les deux profils pour comparer.');return}show(a)};
+</script></body></html>
