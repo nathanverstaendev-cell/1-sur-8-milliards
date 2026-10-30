@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr"><head><meta charset="utf-8">
+<meta name="google-adsense-account" content="ca-pub-1070610505663982">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <!-- La description affichée sous le titre dans les résultats Google -->
 <meta name="description" content="Découvre à quel point tu es unique parmi les 8 milliards d’humains : pourcentages réels, comparaison avec un ami et image à partager.">
@@ -95,7 +96,7 @@ hist();
 $('fr').onclick=()=>{const b=$('fb');b.hidden=!b.hidden;$('fr').textContent=b.hidden?'Comparer avec un ami':'Annuler la comparaison'};
 
 function calc(v){const r=[];
-S.forEach(([id,l,o])=>{if(v[id]===''&&!0)return;if(v[id]==='')return;const x=o[v[id]];let p=x[1];
+S.forEach(([id,l,o])=>{if(v[id]==='')return;const x=o[v[id]];let p=x[1];
 if(id==='dalto'){const q=v.sexe==='0'?.4:v.sexe==='1'?4.5:2.5;p=v.dalto==='0'?100-q:q}
 r.push({l,d:x[0],p:p/100})});
 if(v.dob){const d=new Date(v.dob+'T12:00:00'),n=new Date();let a=n.getFullYear()-d.getFullYear();
