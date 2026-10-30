@@ -12,10 +12,8 @@
 @media(prefers-color-scheme:dark){:root{--bg:#0b0f26;--tx:#e8ebfa;--mu:#98a0c8;--co:#8a95ff;--pk:#ff5c85;--ln:#252b52;--in:#141a3b;color-scheme:dark}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,-apple-system,sans-serif;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
-.wrap{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;max-width:1100px;margin:auto;padding:0 12px}
-main{padding:20px 6px 40px;max-width:540px;width:100%;margin:auto}
-.ad{display:none}.slot{width:160px;min-height:600px;border:1px dashed var(--ln);color:var(--mu);font-size:12px;display:flex;align-items:center;justify-content:center;text-align:center;border-radius:6px}
-@media(min-width:1000px){.wrap{grid-template-columns:170px minmax(0,540px) 170px;justify-content:center}.ad{display:block;padding-top:20px}.ad .slot{position:sticky;top:20px}}
+.wrap{max-width:540px;margin:auto;padding:0 12px}
+main{padding:20px 6px 40px}
 h1{font:700 30px/1.15 Georgia,"Iowan Old Style",serif;margin:6px 0 8px}
 .mu{color:var(--mu)}.c{text-align:center}
 .dots{display:grid;grid-template-columns:repeat(20,1fr);gap:5px;margin:18px auto;max-width:300px}
@@ -37,7 +35,6 @@ summary{cursor:pointer;font-weight:600}
 #msg{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:8px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;max-width:90%;text-align:center}#msg.on{opacity:1}
 </style></head><body>
 <div class="wrap">
-<aside class="ad"><!-- Colle ici ton code publicitaire (côté gauche) --><div class="slot">Espace pub<br>160×600</div></aside>
 <main>
 <div id="home">
 <h1>1 sur <span id="pop">8,3</span> milliards</h1>
@@ -56,7 +53,6 @@ summary{cursor:pointer;font-weight:600}
 </div>
 <div id="res" hidden><div id="out"></div></div>
 </main>
-<aside class="ad"><!-- Colle ici ton code publicitaire (côté droit) --><div class="slot">Espace pub<br>160×600</div></aside>
 </div>
 <div id="msg" role="status"></div>
 <script>
